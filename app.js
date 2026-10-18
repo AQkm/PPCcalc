@@ -57,7 +57,7 @@ function renderProbabilityChart(distribution, chance) {
   const grid = Array.from({ length: 5 }, (_, index) => {
     const value = maxY * index / 4;
     const y = yScale(value);
-    return `<line x1="${plot.left}" y1="${y}" x2="${width - plot.right}" y2="${y}" stroke="#424242"/><text x="${plot.left - 12}" y="${y + 4}" fill="#b7b7b7" font-size="11" text-anchor="end">${value.toFixed(1)}%</text>`;
+    return `<line x1="${plot.left}" y1="${y}" x2="${width - plot.right}" y2="${y}" stroke="#383838"/><text x="${plot.left - 12}" y="${y + 4}" fill="#909090" font-size="11" text-anchor="end">${value.toFixed(1)}%</text>`;
   }).join('');
   const bars = ranges.map((range) => {
     const x = xScale(range.start) + 1;
@@ -65,8 +65,8 @@ function renderProbabilityChart(distribution, chance) {
     const y = yScale(range.probability);
     return `<rect x="${x}" y="${y}" width="${barWidth}" height="${plot.top + plotHeight - y}" rx="2" fill="#3b82f6"/>`;
   }).join('');
-  const labels = [minX, 500_000, 1_000_000, 1_500_000, maxX].map((x) => `<text x="${xScale(x)}" y="${height - 17}" fill="#b7b7b7" font-size="11" text-anchor="middle">${chips.format(x)}</text>`).join('');
-  probabilitySvg.innerHTML = `${grid}${bars}<text x="${plot.left + plotWidth / 2}" y="${height - 1}" fill="#e0e0e0" font-size="11" text-anchor="middle">Day 1 ending stack (chips)</text><text x="17" y="${plot.top + plotHeight / 2}" fill="#e0e0e0" font-size="11" text-anchor="middle" transform="rotate(-90 17 ${plot.top + plotHeight / 2})">Chance of qualifying in this stack range</text>${labels}`;
+  const labels = [minX, 500_000, 1_000_000, 1_500_000, maxX].map((x) => `<text x="${xScale(x)}" y="${height - 17}" fill="#909090" font-size="11" text-anchor="middle">${chips.format(x)}</text>`).join('');
+  probabilitySvg.innerHTML = `${grid}${bars}<text x="${plot.left + plotWidth / 2}" y="${height - 1}" fill="#a0a0a0" font-size="11" text-anchor="middle">Day 1 ending stack (chips)</text><text x="17" y="${plot.top + plotHeight / 2}" fill="#a0a0a0" font-size="11" text-anchor="middle" transform="rotate(-90 17 ${plot.top + plotHeight / 2})">Chance of qualifying in this stack range</text>${labels}`;
 }
 
 function readValues() {

@@ -24,7 +24,7 @@ h2 { font: 700 17px Manrope, sans-serif; letter-spacing: -.02em; margin-bottom: 
 .field { display: flex; align-items: center; gap: 10px; margin-top: 7px; padding: 0 12px; border: 1px solid #4a4a4a; border-radius: 5px; background: #191919; transition: border-color .15s ease, box-shadow .15s ease; }
 .field:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px #3b82f624; }
 input { width: 100%; min-width: 0; padding: 11px 0; color: var(--text); border: 0; outline: 0; background: transparent; font: 600 15px 'DM Sans', sans-serif; }
-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+input:focus-visible { outline: none; caret-color: var(--accent); }
 .unit { color: var(--muted); font-size: 11px; white-space: nowrap; }
 .hint { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
 .results { display: flex; flex-direction: column; gap: 20px; }
@@ -37,6 +37,7 @@ input:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .results .chart-panel { display: flex; flex: 1; flex-direction: column; }
 .results .chart-wrap { display: flex; flex: 1; align-items: stretch; min-height: 0; margin-top: 0; }
 .results .chart-wrap svg { height: 100%; max-height: none; }
+#probabilityChart { opacity: .62; }
 .chart-heading h2 { margin: 0 0 4px; }
 .chart-heading p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .chart-wrap { width: 100%; margin-top: 4px; }
