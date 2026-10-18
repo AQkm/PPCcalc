@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101820">
+  <title>Day 1 Re-entry EV</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <p class="eyebrow">TOURNAMENT TOOL</p>
+      <h1>Day 1 re-entry EV</h1>
+      <p class="intro">Estimate the expected value of entering Day 1 again when a second qualification earns an extra prize.</p>
+    </header>
+
+    <section class="layout" aria-label="Re-entry calculator">
+      <form class="panel inputs" id="calculator">
+        <h2>Tournament details</h2>
+        <label>Buy-in <span class="field"><input id="buyIn" type="number" min="0" step="any" value="150"><span class="unit">$</span></span></label>
+        <label>Prize pool <span class="field"><input id="prizePool" type="number" min="0" step="any" value="1500000"><span class="unit">$</span></span></label>
+        <label>Players in Day 2 <span class="field"><input id="players" type="number" min="1" step="1" value="1000"><span class="unit">players</span></span></label>
+        <label>Day 2 min-cash <span class="field"><input id="minCash" type="number" min="0" step="any" value="375"><span class="unit">$</span></span></label>
+        <label>Average Day 2 stack <span class="field"><input id="averageStack" type="number" min="1" step="any" value="400000"><span class="unit">chips</span></span></label>
+        <label>Extra prize for qualifying again <span class="field"><input id="bonus" type="number" min="0" step="any" value="1000"><span class="unit">$</span></span></label>
+        <label class="toggle-row"><input id="secondMinCash" type="checkbox"><span>Second qualification also awards another min-cash</span></label>
+        <label>Chance of qualifying in this Day 1 <span class="field"><input id="chance" type="number" min="0" max="100" step="any" value="10"><span class="unit">%</span></span></label>
+      </form>
+
+      <div class="results">
+        <section class="panel summary" aria-live="polite">
+          <div class="summary-primary"><p class="eyebrow">BREAK-EVEN SECURED STACK</p><p id="breakEven" class="value">—</p></div>
+        </section>
+
+        <section class="panel chart-panel">
+          <div class="chart-heading"><div><h2>Re-entry EV by secured stack</h2><p>EV = qualification chance × (average ICM from CoQ + extra prize + optional second min-cash) − current ICM − buy-in</p></div></div>
+          <div class="chart-wrap"><svg id="chart" viewBox="0 0 760 350" role="img" aria-label="Expected re-entry value by secured stack chart"></svg></div>
+        </section>
+      </div>
+    </section>
+
+    <div class="lower-results">
+        <section class="panel chart-panel">
+          <div class="chart-heading"><div><h2>Modeled CoQ (Chance of Qualification) by final stack</h2><p>Probability among all Day 1 entries in each 100,000-chip range</p></div></div>
+          <div class="chart-wrap"><svg id="probabilityChart" viewBox="0 0 760 300" role="img" aria-label="Chance of qualifying with at least each Day 1 stack"></svg></div>
+          <p class="formula">Each bar shows the chance of both qualifying and ending Day 1 within that stack range. Probabilities across all ranges sum to the entered qualification chance.</p>
+        </section>
+        <section class="panel payout-panel">
+          <div class="payout-heading"><div><h2>Payout structure</h2><p id="payoutSummary">Estimated payouts by place</p><p class="payout-note">Chance is the combined probability of finishing in the listed places, assuming an average stack and equal opponent stacks.</p></div></div>
+          <div class="payout-table-wrap">
+            <table>
+              <thead><tr><th scope="col">Place(s)</th><th scope="col">Payout</th><th scope="col">Chance with average stack</th></tr></thead>
+              <tbody id="payoutRowsLeft"></tbody>
+            </table>
+            <table>
+              <thead><tr><th scope="col">Place(s)</th><th scope="col">Payout</th><th scope="col">Chance with average stack</th></tr></thead>
+              <tbody id="payoutRowsRight"></tbody>
+            </table>
+          </div>
+        </section>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
