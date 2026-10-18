@@ -57,16 +57,16 @@ function renderProbabilityChart(distribution, chance) {
   const grid = Array.from({ length: 5 }, (_, index) => {
     const value = maxY * index / 4;
     const y = yScale(value);
-    return `<line x1="${plot.left}" y1="${y}" x2="${width - plot.right}" y2="${y}" stroke="#30434d"/><text x="${plot.left - 12}" y="${y + 4}" fill="#9aadb5" font-size="11" text-anchor="end">${value.toFixed(1)}%</text>`;
+    return `<line x1="${plot.left}" y1="${y}" x2="${width - plot.right}" y2="${y}" stroke="#424242"/><text x="${plot.left - 12}" y="${y + 4}" fill="#b7b7b7" font-size="11" text-anchor="end">${value.toFixed(1)}%</text>`;
   }).join('');
   const bars = ranges.map((range) => {
     const x = xScale(range.start) + 1;
     const barWidth = xScale(range.end) - xScale(range.start) - 2;
     const y = yScale(range.probability);
-    return `<rect x="${x}" y="${y}" width="${barWidth}" height="${plot.top + plotHeight - y}" rx="2" fill="#69e0bd"/>`;
+    return `<rect x="${x}" y="${y}" width="${barWidth}" height="${plot.top + plotHeight - y}" rx="2" fill="#3b82f6"/>`;
   }).join('');
-  const labels = [minX, 500_000, 1_000_000, 1_500_000, maxX].map((x) => `<text x="${xScale(x)}" y="${height - 17}" fill="#9aadb5" font-size="11" text-anchor="middle">${chips.format(x)}</text>`).join('');
-  probabilitySvg.innerHTML = `${grid}${bars}<text x="${plot.left + plotWidth / 2}" y="${height - 1}" fill="#9aadb5" font-size="11" text-anchor="middle">Day 1 ending stack (chips)</text><text x="17" y="${plot.top + plotHeight / 2}" fill="#9aadb5" font-size="11" text-anchor="middle" transform="rotate(-90 17 ${plot.top + plotHeight / 2})">Chance of qualifying in this stack range</text>${labels}`;
+  const labels = [minX, 500_000, 1_000_000, 1_500_000, maxX].map((x) => `<text x="${xScale(x)}" y="${height - 17}" fill="#b7b7b7" font-size="11" text-anchor="middle">${chips.format(x)}</text>`).join('');
+  probabilitySvg.innerHTML = `${grid}${bars}<text x="${plot.left + plotWidth / 2}" y="${height - 1}" fill="#e0e0e0" font-size="11" text-anchor="middle">Day 1 ending stack (chips)</text><text x="17" y="${plot.top + plotHeight / 2}" fill="#e0e0e0" font-size="11" text-anchor="middle" transform="rotate(-90 17 ${plot.top + plotHeight / 2})">Chance of qualifying in this stack range</text>${labels}`;
 }
 
 function readValues() {
@@ -148,9 +148,9 @@ function icmValue(heroStack, opponentStack, payouts) {
 }
 
 function renderChart({ buyIn, places, bonus, chance, totalChips, payouts, secondMinCashValue, stackDistribution }) {
-  const width = 760;
-  const height = 350;
-  const plot = { left: 72, right: 18, top: 20, bottom: 52 };
+  const width = 860;
+  const height = 500;
+  const plot = { left: 96, right: 20, top: 12, bottom: 70 };
   const plotWidth = width - plot.left - plot.right;
   const plotHeight = height - plot.top - plot.bottom;
   const maxX = 1_000_000;
@@ -168,20 +168,26 @@ function renderChart({ buyIn, places, bonus, chance, totalChips, payouts, second
   });
   const minY = Math.min(0, ...points.map((point) => point.y));
   const maxY = Math.max(0, ...points.map((point) => point.y));
-  const pad = Math.max((maxY - minY) * 0.12, 1);
-  const low = minY - pad;
-  const high = maxY + pad;
+  const rawStep = Math.max((maxY - minY) / 5, 0.01);
+  const magnitude = 10 ** Math.floor(Math.log10(rawStep));
+  const normalizedStep = rawStep / magnitude;
+  const step = (normalizedStep <= 1 ? 1 : normalizedStep <= 2 ? 2 : normalizedStep <= 5 ? 5 : 10) * magnitude;
+  const low = Math.floor(minY / step) * step;
+  const high = Math.ceil(maxY / step) * step || step;
   const xScale = (x) => plot.left + x / maxX * plotWidth;
   const yScale = (y) => plot.top + (high - y) / (high - low) * plotHeight;
   const line = points.map((point, index) => `${index ? 'L' : 'M'} ${xScale(point.x)} ${yScale(point.y)}`).join(' ');
-  const grid = Array.from({ length: 5 }, (_, index) => {
-    const value = low + (high - low) * index / 4;
+  const yTicks = Array.from({ length: Math.round((high - low) / step) + 1 }, (_, index) => low + index * step);
+  const grid = yTicks.map((value) => {
     const y = yScale(value);
-    return `<line x1="${plot.left}" y1="${y}" x2="${width - plot.right}" y2="${y}" stroke="#30434d"/><text x="${plot.left - 12}" y="${y + 4}" fill="#9aadb5" font-size="11" text-anchor="end">${money.format(value)}</text>`;
+    const isZero = Math.abs(value) < 0.001;
+    const label = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: step < 1 ? 2 : 0 }).format(value);
+    return `<line x1="${plot.left}" y1="${y}" x2="${width - plot.right}" y2="${y}" stroke="${isZero ? '#dddddd' : '#424242'}" stroke-width="${isZero ? 2 : 1}"/><text x="${plot.left - 14}" y="${y + 6}" fill="${isZero ? '#ffffff' : '#b7b7b7'}" font-size="15" font-weight="${isZero ? 700 : 500}" text-anchor="end">${label}</text>`;
   }).join('');
-  const zero = low <= 0 && high >= 0 ? `<line x1="${plot.left}" y1="${yScale(0)}" x2="${width - plot.right}" y2="${yScale(0)}" stroke="#82959d" stroke-dasharray="5 5"/>` : '';
-  const labels = [0, maxX / 2, maxX].map((x) => `<text x="${xScale(x)}" y="${height - 20}" fill="#9aadb5" font-size="11" text-anchor="middle">${chips.format(x)}</text>`).join('');
-  svg.innerHTML = `${grid}${zero}<path d="${line}" fill="none" stroke="#69e0bd" stroke-width="3" stroke-linecap="round"/><text x="${plot.left + plotWidth / 2}" y="${height - 2}" fill="#9aadb5" font-size="11" text-anchor="middle">Already secured Day 2 stack (chips)</text><text x="17" y="${plot.top + plotHeight / 2}" fill="#9aadb5" font-size="11" text-anchor="middle" transform="rotate(-90 17 ${plot.top + plotHeight / 2})">Expected value</text>${labels}`;
+  const xTicks = [0, 200_000, 400_000, 600_000, 800_000, maxX];
+  const verticalGrid = xTicks.map((x) => `<line x1="${xScale(x)}" y1="${plot.top}" x2="${xScale(x)}" y2="${plot.top + plotHeight}" stroke="#424242"/>`).join('');
+  const labels = xTicks.map((x) => `<text x="${xScale(x)}" y="${height - 29}" fill="#b7b7b7" font-size="15" text-anchor="middle">${chips.format(x)}</text>`).join('');
+  svg.innerHTML = `${verticalGrid}${grid}<path d="${line}" fill="none" stroke="#3b82f6" stroke-width="3.5" stroke-linecap="round"/><text x="${plot.left + plotWidth / 2}" y="${height - 3}" fill="#e0e0e0" font-size="15" font-weight="600" text-anchor="middle">Already secured Day 2 stack (chips)</text><text x="19" y="${plot.top + plotHeight / 2}" fill="#e0e0e0" font-size="15" font-weight="600" text-anchor="middle" transform="rotate(-90 19 ${plot.top + plotHeight / 2})">Expected value</text>${labels}`;
   return points;
 }
 
