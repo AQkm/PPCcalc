@@ -1,4 +1,4 @@
-const fields = ['buyIn', 'prizePool', 'players', 'minCash', 'averageStack', 'bonus', 'chance'];
+const fields = ['buyIn', 'prizePool', 'players', 'minCash', 'averageStack', 'bonus', 'chance', 'entries', 'rake'];
 const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 const chips = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
 const svg = document.querySelector('#chart');
@@ -192,10 +192,22 @@ function renderChart({ buyIn, places, bonus, chance, totalChips, payouts, second
 }
 
 function update() {
-  const { buyIn, prizePool, players, minCash, averageStack, bonus, chance } = readValues();
+  const calculatePool = document.querySelector('#calculatePool').checked;
+  const poolFormulaInputs = document.querySelector('#poolFormulaInputs');
+  const poolInput = document.querySelector('#prizePool');
+  poolFormulaInputs.hidden = !calculatePool;
+  poolInput.readOnly = calculatePool;
+  const values = readValues();
+  const { buyIn, players, minCash, averageStack, bonus, chance, entries, rake } = values;
+  if (calculatePool) {
+    values.prizePool = entries * buyIn * (100 - rake) / 100;
+    poolInput.value = Number.isFinite(values.prizePool) ? values.prizePool : '';
+  }
+  const { prizePool } = values;
   const valid = [buyIn, prizePool, players, minCash, averageStack, bonus, chance].every(Number.isFinite)
     && buyIn >= 0 && prizePool > 0 && Number.isInteger(players) && players >= 2
-    && minCash >= 0 && minCash < prizePool * 0.10 && averageStack > 0 && bonus >= 0 && chance >= 0 && chance <= 100;
+    && minCash >= 0 && minCash < prizePool * 0.10 && averageStack > 0 && bonus >= 0 && chance >= 0 && chance <= 100
+    && (!calculatePool || (Number.isInteger(entries) && entries > 0 && rake >= 0 && rake <= 100));
   const firstPrize = prizePool * 0.10;
   const minimumPool = minCash * players + firstPrize - minCash;
   const maximumPool = firstPrize * (players - 1) + minCash;
@@ -227,4 +239,5 @@ function update() {
 
 document.querySelectorAll('input').forEach((input) => input.addEventListener('input', update));
 document.querySelector('#secondMinCash').addEventListener('change', update);
+document.querySelector('#calculatePool').addEventListener('change', update);
 update();

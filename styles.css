@@ -16,6 +16,10 @@ h1 { font: 800 clamp(32px, 5vw, 48px)/1.1 Manrope, sans-serif; letter-spacing: -
 h2 { font: 700 17px Manrope, sans-serif; letter-spacing: -.02em; margin-bottom: 20px; }
 .inputs label { display: block; margin: 0 0 15px; color: #e5e5e5; font-size: 13px; font-weight: 600; }
 .inputs .toggle-row { display: flex; align-items: center; gap: 12px; line-height: 1.45; cursor: pointer; }
+.pool-formula-inputs { margin: -3px 0 15px; padding: 12px; border: 1px solid var(--line); border-radius: 5px; background: #1d1d1d; }
+.pool-formula-inputs label:last-of-type { margin-bottom: 8px; }
+.pool-formula-inputs .hint { margin: 0; }
+#prizePool:read-only { color: #b7b7b7; cursor: default; }
 .toggle-row input { appearance: none; position: relative; width: 42px; height: 24px; flex: 0 0 42px; margin: 0; padding: 0; border: 1px solid #626262; border-radius: 999px; background: #444; cursor: pointer; transition: background .18s ease, border-color .18s ease; }
 .toggle-row input::before { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #f4f4f4; box-shadow: 0 1px 3px #0008; transition: transform .18s ease; }
 .toggle-row input:checked { border-color: var(--accent); background: var(--accent); }
